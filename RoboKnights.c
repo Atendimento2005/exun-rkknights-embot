@@ -1,5 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
+# define stop_pin 0 //brake or move
+# define left_pin 1 //move left
+# define right_pin 2 //move right
+# define fs_pin A0 //forward sensor
+# define ls_pin A1 //left sensor
+# define rs_pin A2 //right sensor
+# define rotation_pin A3 //rotation
+# define arrow_pin 11 //arrow area
+# define block_pin 12 //block area
+# define up_pin 13 //move up in block area
+
+
 
 struct node
 {
@@ -13,7 +23,6 @@ void inorderTraversal(struct node *root)
     if (root == NULL)
         return;
     inorderTraversal(root->left_child);
-    printf("%d ->", root->item);
     inorderTraversal(root->right_child);
 }
 
@@ -22,7 +31,6 @@ void preorderTraversal(struct node *root)
 {
     if (root == NULL)
         return;
-    printf("%d ->", root->item);
     preorderTraversal(root->left_child);
     preorderTraversal(root->right_child);
 }
@@ -34,7 +42,6 @@ void postorderTraversal(struct node *root)
         return;
     postorderTraversal(root->left_child);
     postorderTraversal(root->right_child);
-    printf("%d ->", root->item);
 }
 
 // Create a new Node
@@ -62,10 +69,41 @@ struct node *insertRight(struct node *root, int value)
     return root->right_child;
 }
 
-void setup()
-{
-    struct node *root = createNode(0);
-    insertLeft(root->left_child, -90);
-    insertRight(root->right_child, 90);
-    inorderTraversal(root);
+void setup() {
+  Serial.begin(115200);
+  pinMode(stop_pin, OUTPUT);
+  pinMode(left_pin, OUTPUT);
+  pinMode(right_pin, OUTPUT);
+  pinMode(fs_pin, INPUT);
+  pinMode(rs_pin, INPUT);
+  pinMode(ls_pin, INPUT);
+  pinMode(arrow_pin, INPUT);
+  pinMode(block_pin, INPUT);
+  pinMode(rotation_pin, INPUT);
+  pinMode(up_pin, OUTPUT);
+  for (int i = 3; i < 11; i++)
+    pinMode(i, OUTPUT);
+  set_speed(255);
+  delay(1000);
+  
+  struct node *root = createNode(0);
+  insertLeft(root->left_child, );
+  insertRight(root->right_child, 90);
+  int x = root->left_child->item;
+  
+  Serial.println(x);
+}
+
+void loop() {
+  
+}
+
+void set_speed(byte speed){
+  int i = 3;
+  while (speed > 0) {
+    digitalWrite(i, speed % 2 == 1 ? HIGH : LOW);
+    speed = speed / 2;
+    i++;
+  }
+  for (;i < 11; i++) digitalWrite(i, LOW);
 }
