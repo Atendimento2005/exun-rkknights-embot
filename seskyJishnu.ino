@@ -28,11 +28,7 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(stop_pin, HIGH);
-  delay(1000);
-  digitalWrite(stop_pin, LOW);
-  delay(1000);
-  Serial.println(analogRead(A1));
+  
 }
 
 void set_speed(byte speed){
