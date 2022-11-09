@@ -1,6 +1,4 @@
-#include <cstddef>
-#include <cstdio>
-#include <iostream>
+
 #define stop_pin 0      // brake or move
 #define left_pin 1      // move left
 #define right_pin 2     // move right
@@ -48,7 +46,7 @@ namespace BinaryTree {
   void traverse_nodes(struct node *root) {
     if (root == NULL)
       return;
-    printf("id:%d val:%d -> ", root->id, root->item);
+    Serial.println(root->id, root->item);
     traverse_nodes(root->left_child);
     traverse_nodes(root->right_child);
   }
@@ -110,6 +108,7 @@ namespace BinaryTree {
 
 
 namespace Arduino{
+  struct node *root = BinaryTree::createNode(0,1);
   void set_speed(byte speed){
     int i = 3;
     while (speed > 0) {
@@ -119,13 +118,30 @@ namespace Arduino{
     }
     for (;i < 11; i++) digitalWrite(i, LOW);
   }
+
+  void turn_right(stuct BinaryTree::node *root)
+  {
+    set_speed(80);
+    while (analogRead(rotation_pin) >= 270 || analogRead(rotation_pin) == 0)
+    {
+      digitalWrite(stop_pin, HIGH);
+      digitalWrite(right_pin, HIGH);
+    }
+    digitalWrite(right_pin, LOW);
+    
+    BinaryTree::insertRight(root,270);
+    Arduino::root = root->right_child;
+  }
+
   void main_loop() {
     digitalWrite(stop_pin, HIGH);
     delay(1000);
     digitalWrite(stop_pin, LOW);
     delay(1000);
     Serial.println(analogRead(A1));
+    BinaryTree::traverse_nodes(root);
   }
+  
   
   void init()
   {
@@ -144,18 +160,11 @@ namespace Arduino{
 
 }
 
-
-
 void main() {
   Arduino::init();
-  Arduino::set_speed(255);
-  
+  Arduino::set_speed(255);  
   // begin primary loop
   loop{
     Arduino::main_loop();
   }
 }
-
-
-
-
