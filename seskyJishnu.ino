@@ -9,7 +9,6 @@
 #define arrow_pin 11    // arrow area
 #define block_pin 12    // block area
 #define up_pin 13       // move up in block area
-#define main setup
 
 namespace BinaryTree {
   int bias = -90;
@@ -108,21 +107,9 @@ namespace BinaryTree {
 struct BinaryTree::node *root;
 
 
-  void turn_right(struct BinaryTree::node *root)
-  {
-    set_speed(80);
-    while (analogRead(rotation_pin) >= 270 || analogRead(rotation_pin) == 0)
-    {
-      digitalWrite(stop_pin, HIGH);
-      digitalWrite(right_pin, HIGH);
-    }
-    digitalWrite(right_pin, LOW);
+
     
-    BinaryTree::insertRight(root,270);
-    root = root->right_child;
-  }
-    
-  void setup()
+  void setup(struct BinaryTree::node *root)
   {
     Serial.begin(115200);
     pinMode(stop_pin, OUTPUT);
@@ -138,7 +125,7 @@ struct BinaryTree::node *root;
     set_speed(255);  
   }
 
-  void loop() {
+  void loop(struct BinaryTree::node *root) {
     digitalWrite(stop_pin, HIGH);
   }
   
@@ -152,4 +139,19 @@ struct BinaryTree::node *root;
       i++;
     }
     for (;i < 11; i++) digitalWrite(i, LOW);
+  }
+
+
+  void turn_right(struct BinaryTree::node *root)
+  {
+    set_speed(80);
+    while (analogRead(rotation_pin) >= 270 || analogRead(rotation_pin) == 0)
+    {
+      digitalWrite(stop_pin, HIGH);
+      digitalWrite(right_pin, HIGH);
+    }
+    digitalWrite(right_pin, LOW);
+    
+    BinaryTree::insertRight(root,270);
+    root = root->right_child;
   }
