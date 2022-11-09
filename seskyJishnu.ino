@@ -155,4 +155,3 @@ struct BinaryTree::node *root;
     }
     for (;i < 11; i++) digitalWrite(i, LOW);
   }
-
