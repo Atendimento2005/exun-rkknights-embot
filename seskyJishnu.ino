@@ -10,7 +10,6 @@
 #define block_pin 12    // block area
 #define up_pin 13       // move up in block area
 #define main setup
-#define loop for(;;)
 
 namespace BinaryTree {
   int bias = -90;
@@ -46,7 +45,7 @@ namespace BinaryTree {
   void traverse_nodes(struct node *root) {
     if (root == NULL)
       return;
-    Serial.println(root->id, root->item);
+    //Serial.println(root->id, root->item);
     traverse_nodes(root->left_child);
     traverse_nodes(root->right_child);
   }
@@ -106,20 +105,10 @@ namespace BinaryTree {
 } // namespace BinaryTree
 
 
+struct BinaryTree::node *root;
 
-namespace Arduino{
-  struct node *root = BinaryTree::createNode(0,1);
-  void set_speed(byte speed){
-    int i = 3;
-    while (speed > 0) {
-      digitalWrite(i, speed % 2 == 1 ? HIGH : LOW);
-      speed = speed / 2;
-      i++;
-    }
-    for (;i < 11; i++) digitalWrite(i, LOW);
-  }
 
-  void turn_right(stuct BinaryTree::node *root)
+  void turn_right(struct BinaryTree::node *root)
   {
     set_speed(80);
     while (analogRead(rotation_pin) >= 270 || analogRead(rotation_pin) == 0)
@@ -130,20 +119,10 @@ namespace Arduino{
     digitalWrite(right_pin, LOW);
     
     BinaryTree::insertRight(root,270);
-    Arduino::root = root->right_child;
+    root = root->right_child;
   }
-
-  void main_loop() {
-    digitalWrite(stop_pin, HIGH);
-    delay(1000);
-    digitalWrite(stop_pin, LOW);
-    delay(1000);
-    Serial.println(analogRead(A1));
-    BinaryTree::traverse_nodes(root);
-  }
-  
-  
-  void init()
+    
+  void setup()
   {
     Serial.begin(115200);
     pinMode(stop_pin, OUTPUT);
@@ -156,15 +135,24 @@ namespace Arduino{
     pinMode(block_pin, INPUT);
     pinMode(rotation_pin, INPUT);
     pinMode(up_pin, OUTPUT);
+    set_speed(255);  
   }
 
-}
-
-void main() {
-  Arduino::init();
-  Arduino::set_speed(255);  
-  // begin primary loop
-  loop{
-    Arduino::main_loop();
+  void loop() {
+    digitalWrite(stop_pin, HIGH);
+    BinaryTree::traverse_nodes(root);
   }
-}
+  
+
+
+  void set_speed(byte speed){
+    root = BinaryTree::createNode(0,++BinaryTree::count,nullptr);
+    int i = 3;
+    while (speed > 0) {
+      digitalWrite(i, speed % 2 == 1 ? HIGH : LOW);
+      speed = speed / 2;
+      i++;
+    }
+    for (;i < 11; i++) digitalWrite(i, LOW);
+  }
+
