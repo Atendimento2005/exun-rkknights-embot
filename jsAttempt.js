@@ -33,49 +33,51 @@ class Commands {
 }
 
 const commands = new Commands();
-
-let state = 0
-
 setSpeed(255);
 set(15, setInterval(loop, 100));
 
 function turn(deg) {
-  commands.add(2, deg)
+  var newRotation = ((get(rotationPin)*1023/5) + deg)
+  if (newRotation < 0){
+    newRotation += 360
+  }
+  newRotation %= 360
+  commands.add(2, newRotation)
 }
 
-function loop() {
 
-  turn(90)
-  console.log("Turned")
+
+function loop() {
   // if (state == 2){
   //   setSpeed(50)
   //   set(stopPin, 1)
   //   set(rightPin, 1)
   // }
   
+  console.log(get(fsPin))
+  
   if (commands.getLength() > 0) {
     var curCommand = commands.fetch()
     console.log(curCommand)
     if (curCommand[0] == 2){
-      deg = curCommand[1]
-      newRotation = ((get(rotationPin)*1023/5) + deg)%360
-      setSpeed(50)
+      var newRotation = curCommand[1]
+      setSpeed(200)
       set(stopPin, 1)
       set(rightPin, 1)
       
-      var turned = false
-      
       var turning = setInterval(() => {
-        if (get(rotationPin)*1023/5 < newRotation+10 || get(rotationPin)*1023/5 > newRotation-10){
+        var curRotation = Math.round(get(rotationPin)*1023/5)
+        if (curRotation < newRotation+5 && curRotation > newRotation-5){
           clearInterval(turning)
+          set(rightPin, 0)
+          set(stopPin, 0)
+          setSpeed(255)
+          console.log("Turned")
         }else{
+          console.log(get(rotationPin)*1023/5)
           console.log("Turning")
         }
       })
-
-      set(rightPin, 0)
-      set(stopPin, 0)
-      setSpeed(255)
     }
     
   }
