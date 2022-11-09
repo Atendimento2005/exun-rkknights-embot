@@ -1,4 +1,3 @@
-
 #define stop_pin 0      // brake or move
 #define left_pin 1      // move left
 #define right_pin 2     // move right
@@ -9,6 +8,7 @@
 #define arrow_pin 11    // arrow area
 #define block_pin 12    // block area
 #define up_pin 13       // move up in block area
+#define main setup
 
 namespace BinaryTree {
   int bias = -90;
@@ -36,12 +36,12 @@ namespace BinaryTree {
   struct node {
     int item;
     int id;
-    struct node *left_child;
-    struct node *right_child;
-    struct node *parent;
+    struct node left_child;
+    struct noderight_child;
+    struct node parent;
   };
 
-  void traverse_nodes(struct node *root) {
+  void traverse_nodes(struct noderoot) {
     if (root == NULL)
       return;
     //Serial.println(root->id, root->item);
@@ -50,8 +50,8 @@ namespace BinaryTree {
   }
 
   // Create a new Node
-  struct node *createNode(int value, int id, struct node *parent = NULL) {
-    struct node *newNode = (struct node *)malloc(sizeof(struct node));
+  struct node createNode(int value, int id, struct nodeparent = NULL) {
+    struct node newNode = (struct node)malloc(sizeof(struct node));
     newNode->item = value;
     newNode->left_child = NULL;
     newNode->right_child = NULL;
@@ -64,19 +64,19 @@ namespace BinaryTree {
   }
 
   // Insert on the left of the node
-  struct node *insertLeft(struct node *root, int value) {
+  struct node insertLeft(struct noderoot, int value) {
     root->left_child = createNode(value, ++count);
     root->parent = root;
     return root->left_child;
   }
 
   // Insert on the right of the node
-  struct node *insertRight(struct node *root, int value) {
+  struct node insertRight(struct noderoot, int value) {
     root->right_child = createNode(value, ++count);
     root->parent = root;
     return root->right_child;
   }
-  int has_been_travelled(struct node *root, int to_move) {
+  int has_been_travelled(struct node root, int to_move) {
     if (to_move == -90) {
       return check_travelled(2 + root->id, 0,
                              sizeof(travelled_id) / sizeof(travelled_id[0]) - 1);
@@ -86,7 +86,7 @@ namespace BinaryTree {
     }
   }
   // todo
-  void move(struct node *root, int id) {
+  void move(struct noderoot, int id) {
     if (id == root->id) {
       // check children, if bias has been travelled go the other root
       int to_move = bias;
@@ -104,12 +104,7 @@ namespace BinaryTree {
 } // namespace BinaryTree
 
 
-struct BinaryTree::node *root;
-
-
-
-    
-  void setup(struct BinaryTree::node *root)
+  void setup()
   {
     Serial.begin(115200);
     pinMode(stop_pin, OUTPUT);
@@ -122,36 +117,20 @@ struct BinaryTree::node *root;
     pinMode(block_pin, INPUT);
     pinMode(rotation_pin, INPUT);
     pinMode(up_pin, OUTPUT);
-    set_speed(255);  
+    for (int i = 3; i < 11; i++)
+      pinMode(i, OUTPUT);
+    set_speed(255);
   }
 
-  void loop(struct BinaryTree::node *root) {
+  void loop() {
     digitalWrite(stop_pin, HIGH);
   }
-  
-
-
-  void set_speed(byte speed){
-    int i = 3;
-    while (speed > 0) {
-      digitalWrite(i, speed % 2 == 1 ? HIGH : LOW);
-      speed = speed / 2;
-      i++;
-    }
-    for (;i < 11; i++) digitalWrite(i, LOW);
+ 
+ void set_speed(byte speed){
+  int i = 3;
+  while (speed > 0) {
+    digitalWrite(i, speed % 2 == 1 ? HIGH : LOW);
+    speed = speed / 2;
+    i++;
   }
-
-
-  void turn_right(struct BinaryTree::node *root)
-  {
-    set_speed(80);
-    while (analogRead(rotation_pin) >= 270 || analogRead(rotation_pin) == 0)
-    {
-      digitalWrite(stop_pin, HIGH);
-      digitalWrite(right_pin, HIGH);
-    }
-    digitalWrite(right_pin, LOW);
-    
-    BinaryTree::insertRight(root,270);
-    root = root->right_child;
-  }
+}
