@@ -95,7 +95,19 @@ void setup() {
 }
 
 void loop() {
-  
+    while (analogRead(fs_pin) >= 200)
+    {
+        digitalWrite(stop_pin, HIGH);
+    }
+    digitalWrite(stop_pin, LOW);
+    set_speed(100);
+    while (analogRead(rotation_pin)!=270)
+    {
+        digitalWrite(stop_pin, HIGH);
+        digitalWrite(ls_pin, HIGH);
+    }
+    digitalWrite(ls_pin, LOW);
+    set_speed(255);
 }
 
 void set_speed(byte speed){
